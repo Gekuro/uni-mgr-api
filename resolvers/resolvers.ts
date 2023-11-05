@@ -1,0 +1,33 @@
+import { IResolvers } from "mercurius";
+
+import persons from "./persons";
+import courses from "./courses";
+
+const resolvers: IResolvers = {
+  Query: {
+    person: persons.getPerson,
+    persons: persons.getPersons,
+
+    course: courses.getCourse,
+    courses: courses.getCourses,
+  },
+  Mutation: {
+    addPerson: persons.addPerson,
+    addPersons: persons.addPersons,
+    updatePerson: persons.updatePerson,
+
+    addCourse: courses.addCourse,
+    addCourses: courses.addCourses,
+    updateCourse: courses.updateCourse,
+  },
+  Person: {
+    attending: persons.attendingField,
+    lecturing: persons.lecturingField,
+  },
+  Course: {
+    lecturer: courses.lecturerField,
+    students: courses.studentsField,
+  },
+};
+
+export default resolvers;

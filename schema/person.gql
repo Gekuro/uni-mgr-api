@@ -1,0 +1,42 @@
+type Query {
+  person(UUID: ID!): Person
+  persons(name: String, surname: String, type: PersonType): [Person]
+}
+
+type Mutation {
+  addPerson(person: PersonInput!): Person!
+  addPersons(persons: [PersonInput!]!): [Person!]!
+  updatePerson(UUID: ID!, person: PartialPersonInput!): Person
+}
+
+type Person {
+  UUID: ID!
+  name: String!
+  surname: String!
+  birthDate: String!
+  type: PersonType!
+  attending: [Course]!
+  lecturing: [Course]!
+}
+
+input PersonInput {
+  name: String!
+  surname: String!
+  birthDate: String!
+  type: PersonType!
+}
+
+input PartialPersonInput {
+  name: String
+  surname: String
+  birthDate: String
+  type: PersonType
+}
+
+enum PersonType {
+  STUDENT
+  EMPLOYEE
+  DOCTOR
+  PROFESSOR
+  ADMINISTRATIVE
+}

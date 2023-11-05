@@ -1,0 +1,30 @@
+type Query {
+  course(UUID: ID!): Course
+  courses: [Course]!
+}
+
+type Mutation {
+  addCourse(course: CourseInput!): Course!
+  addCourses(courses: [CourseInput!]!): [Course!]!
+  updateCourse(UUID: ID!, course: PartialCourseInput!): Course
+}
+
+type Course {
+  UUID: ID!
+  name: String!
+  lecturer: Person
+  students: [Person]!
+}
+
+input CourseInput {
+  name: String!
+  lecturerId: ID!
+  studentIds: [ID]
+}
+
+input PartialCourseInput {
+  UUID: ID
+  name: String
+  lecturerId: ID
+  studentIds: [ID]
+}
