@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="logo.png" width="200" />
+    <img src="logo.png" width="350" />
 </p>
 
 # a University Management (GraphQL) API
