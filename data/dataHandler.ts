@@ -7,8 +7,7 @@ import { Person } from "../types/person";
 import { Account } from "../types/account";
 import { CollectionHandler } from "./collectionHandler";
 
-isEnvValid(process.env);
-const env = process.env as CorrectEnv;
+const env = process.env as unknown as CorrectEnv; // vaildated in main.ts
 const client: MongoClient = new MongoClient(env.MONGO_CONN_STR);
 
 // define collections here

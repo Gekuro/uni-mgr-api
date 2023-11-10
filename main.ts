@@ -9,7 +9,7 @@ import { loadSchema } from "@graphql-tools/load";
 import { isEnvValid, CorrectEnv } from "./types/validators";
 import { connectDb } from "./data/dataHandler";
 import resolvers from "./resolvers/resolvers";
-import { loginRoute, readTokenIntoContext } from "./auth/auth";
+import { readTokenIntoContext } from "./auth/auth";
 
 isEnvValid(process.env);
 const env = process.env as CorrectEnv;
@@ -24,8 +24,6 @@ async function loadServer(): Promise<void> {
     assumeValid: true,
     loaders: [new GraphQLFileLoader()],
   });
-
-  app.route(loginRoute);
 
   app.register(mercurius, {
     schema,

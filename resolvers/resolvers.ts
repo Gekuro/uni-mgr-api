@@ -17,6 +17,7 @@ const resolvers: IResolvers = {
     account: accounts.getAccount,
     accounts: accounts.getAccounts,
     self: accounts.getSelf,
+    login: accounts.login,
   },
   Mutation: {
     addPerson: persons.addPerson,

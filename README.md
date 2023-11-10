@@ -10,14 +10,14 @@ This is a standalone API application that allows you to manage the organizationa
 
 I am not planning on expanding this project with any frontend implementations. It is supposed to be open for adaptation of users.
 
-|      Function       | Framework  |
-| :-----------------: | :--------: |
-|     GQL engine      | Mercurius  |
-|     HTTP server     |  Fastify   |
-|   Authentication    |    JWT     |
-| Runtime Environment |   NodeJS   |
-|      Language       | TypeScript |
-|      Database       |  MongoDB   |
+|      Function       |                 Framework                 |
+| :-----------------: | :---------------------------------------: |
+|     GQL engine      |    [Mercurius](https://mercurius.dev/)    |
+|     HTTP server     |      [Fastify](https://fastify.dev/)      |
+|   Authentication    |          [JWT](https://jwt.io/)           |
+| Runtime Environment |       [NodeJS](https://nodejs.org/)       |
+|      Language       | [TypeScript](https://typescriptlang.org/) |
+|      Database       |      [MongoDB](https://mongodb.com/)      |
 
 ## How To
 
@@ -39,6 +39,7 @@ The GQL schema is located in `./schema/` directory.
 ## Authentication & Authorization
 
 Registering accounts which are able to receive JWT tokens from the API is done within the GQL paradigm. `Account`s are able to be created only for `UUID`s which already have a `Person`. Check out `./schema/accounts.gql` for more detail.
+The expected course of behavior is to create `Person` objects for each new student/professor/hire and then issue accounts to them by the administrator.
 
 ### Persons and Accounts
 
@@ -46,36 +47,27 @@ Registering accounts which are able to receive JWT tokens from the API is done w
 
 ### Authentication
 
-Logging in is currently done outside of GQL, on the `/login` endpoint.
-Here is an example of authentication using the JavaScript Fetch API:
+Authenticating and obtaining the JWT is possible via `login` query. The user provides the `Credentials` input object as a parameter, and is returned `LoginStatus` which either consists of an error string, or a `Token` which is structured exactly like the expected idiomatic authorization header.
+
+It is up to the client to store the token, and add it to the `headers` of subsequent GQL requests. The structure of the `TokenHeader` makes it easy to retrieve and inject the header if authentication was successful;
 
 ```typescript
-const res = await fetch(
-    "http://localhost:8001/login",
-    {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            // Make sure that the headers are correct. Powershell's Invoke-WebRequest for example,
-            // uses "Content-Type": "application/x-www-form-urlencoded" by default
-        },
-        body. JSON.stringify({
-            UUID: "D9SJ2A",
-            password: "zaq1@WSX",
-            // Passwords have to be between 7-20 characters, have to include: a special character,
-            // a letter and a number. They cannot include emojis!
-        })
-    }
-);
+export type TokenHeader = {
+  Authorization: `Bearer ${string}`;
+};
 
-type AuthResponse = { token: string } | string;
-const dataBody: AuthResponse = await res.json();
+export type LoginStatus = { token: TokenHeader } | { error: string };
 ```
 
-It is up to the client to store the token, and add it to the `headers` of subsequent GQL requests.
+Authorization is not yet implemented. Currently the only use of the context obtained from decoding JWT from header is in the `self` query, which returns `Account` if a user is authenticated
 
-```typescript
-headers: {
-    "Authorization": "Bearer <token>"
-},
-```
+## Wishlist
+
+- Use the [Effect](https://effect.website/) library to reduce try/catch usage
+- Add authorization logic:
+  - Allow customization of permissions for all queries
+  - Add built-in admin credentials to .env to avoid the need to create the first admin in the database directly
+- Expand the data model:
+  - Add sub-organizations (institutes and the like)
+  - Add directSupervisor field
+  - Add groups and majors/year presets

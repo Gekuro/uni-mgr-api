@@ -2,69 +2,15 @@
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import {
-  CorrectEnv,
-  isCredentialsObjValid,
-  isTokenBodyValid,
-} from "../types/validators";
-import { FastifyReply, FastifyRequest, RouteOptions } from "fastify";
+import { CorrectEnv, isTokenBodyValid } from "../types/validators";
+import { FastifyRequest, RouteOptions } from "fastify";
 import { ServerContext } from "../types/context";
 import { Accounts, Persons } from "../data/dataHandler";
 
 const env = process.env as unknown as CorrectEnv; // vaildated in main.ts
-const wrongCredentials = new Error("UUID or password are invalid");
 const DIGITS = "1234567890";
 const SPECIAL_CHARACTERS = "!@#$%^&*?<>(){}[]:;'\"\\";
 const LETTERS = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-
-const authHandler = async (
-  req: FastifyRequest,
-  reply: FastifyReply
-): Promise<void> => {
-  try {
-    isCredentialsObjValid(req.body);
-
-    const account = await Accounts.collection.findOne({ UUID: req.body.UUID });
-    if (account === null) throw wrongCredentials;
-
-    if (!(await bcrypt.compare(req.body.password, account.passwordHash)))
-      throw wrongCredentials;
-
-    const token = jwt.sign({ UUID: req.body.UUID }, env.SESSION_SECRET, {
-      expiresIn: env.EXPIRES_IN,
-    });
-
-    reply.send({
-      token,
-    });
-  } catch (err) {
-    reply.code(401);
-    reply.send(JSON.stringify(err));
-  }
-};
-
-export const loginRoute: RouteOptions = {
-  method: "POST",
-  url: "/login",
-  schema: {
-    body: {
-      UUID: { type: "string" },
-      password: { type: "string" },
-    },
-    response: {
-      200: {
-        type: "object",
-        properties: {
-          token: { type: "string" },
-        },
-      },
-      401: {
-        type: "string",
-      },
-    },
-  },
-  handler: authHandler,
-};
 
 export const register = async (
   UUID: string,

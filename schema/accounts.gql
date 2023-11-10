@@ -2,10 +2,11 @@ type Query {
   account(UUID: ID!): Account
   accounts: [Account]!
   self: Account
+  login(credentials: Credentials!): LoginStatus!
 }
 
 type Mutation {
-  registerAccount(UUID: ID!, password: String!): RegisterStatus
+  registerAccount(credentials: Credentials!): RegisterStatus!
 }
 
 type Account {
@@ -13,7 +14,21 @@ type Account {
   personalData: Person!
 }
 
+input Credentials {
+  UUID: ID!
+  password: String!
+}
+
 type RegisterStatus {
   success: Boolean!
   error: String
+}
+
+type LoginStatus {
+  token: TokenHeader
+  error: String
+}
+
+type TokenHeader {
+  Authorization: String!
 }

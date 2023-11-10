@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Credentials } from "./credentials";
+import { Credentials } from "./account";
 
 export interface CorrectEnv {
   API_PORT: string;
@@ -36,6 +36,7 @@ export function isTokenBodyValid(
   token: string | jwt.JwtPayload
 ): asserts token is CorrectJWT {
   const invTokenError = new Error("invalid token");
+
   if (typeof token === "string") throw invTokenError;
   if (!token.hasOwnProperty("UUID")) throw invTokenError;
 }
