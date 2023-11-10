@@ -1,7 +1,9 @@
+"use strict";
+
 import { Persons, Courses } from "../data/dataHandler";
 import { Course } from "../types/course";
 import { Person, PersonType } from "../types/person";
-import { getRandomUUID } from "./utils/getRandomId";
+import { getUnusedPersonUUID } from "./utils/UUID";
 
 export default {
   getPerson: async (
@@ -30,11 +32,11 @@ export default {
     { person }: { person: Omit<Person, "UUID"> }
   ): Promise<Person> => {
     const finalPerson: Person = {
-      UUID: getRandomUUID(6),
+      UUID: await getUnusedPersonUUID(),
       ...person,
     };
-    Persons.collection.insertOne(finalPerson);
 
+    Persons.collection.insertOne(finalPerson); // TODO should these be awaited?
     return finalPerson;
   },
 
@@ -42,12 +44,15 @@ export default {
     _: unknown,
     { persons }: { persons: Omit<Person, "UUID">[] }
   ): Promise<Person[]> => {
-    const finalPersons: Person[] = persons.map((person) => ({
-      UUID: getRandomUUID(6),
-      ...person,
-    }));
-    Persons.collection.insertMany(finalPersons);
+    const finalPersons: Person[] = [];
+    for (const person of persons) {
+      finalPersons.push({
+        UUID: await getUnusedPersonUUID(),
+        ...person,
+      });
+    }
 
+    Persons.collection.insertMany(finalPersons);
     return finalPersons;
   },
 

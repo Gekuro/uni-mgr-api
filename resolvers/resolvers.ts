@@ -1,7 +1,10 @@
+"use strict";
+
 import { IResolvers } from "mercurius";
 
 import persons from "./persons";
 import courses from "./courses";
+import accounts from "./accounts";
 
 const resolvers: IResolvers = {
   Query: {
@@ -10,6 +13,10 @@ const resolvers: IResolvers = {
 
     course: courses.getCourse,
     courses: courses.getCourses,
+
+    account: accounts.getAccount,
+    accounts: accounts.getAccounts,
+    self: accounts.getSelf,
   },
   Mutation: {
     addPerson: persons.addPerson,
@@ -19,6 +26,8 @@ const resolvers: IResolvers = {
     addCourse: courses.addCourse,
     addCourses: courses.addCourses,
     updateCourse: courses.updateCourse,
+
+    registerAccount: accounts.registerAccount,
   },
   Person: {
     attending: persons.attendingField,
@@ -27,6 +36,9 @@ const resolvers: IResolvers = {
   Course: {
     lecturer: courses.lecturerField,
     students: courses.studentsField,
+  },
+  Account: {
+    personalData: accounts.personalData,
   },
 };
 

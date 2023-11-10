@@ -1,7 +1,10 @@
+"use strict";
+
 import { Db, MongoClient } from "mongodb";
 import { isEnvValid, CorrectEnv } from "../types/validators";
 import { Course } from "../types/course";
 import { Person } from "../types/person";
+import { Account } from "../types/account";
 import { CollectionHandler } from "./collectionHandler";
 
 isEnvValid(process.env);
@@ -11,6 +14,7 @@ const client: MongoClient = new MongoClient(env.MONGO_CONN_STR);
 // define collections here
 export let Persons: CollectionHandler<Person>;
 export let Courses: CollectionHandler<Course>;
+export let Accounts: CollectionHandler<Account>;
 
 let database: Db;
 export async function connectDb() {
@@ -22,6 +26,7 @@ export async function connectDb() {
   // initiate collections here
   Persons = new CollectionHandler<Person>(database, "persons");
   Courses = new CollectionHandler<Course>(database, "courses");
+  Accounts = new CollectionHandler<Account>(database, "accounts");
 
   console.log("connected to Mongo deployment");
 }

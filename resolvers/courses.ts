@@ -1,7 +1,9 @@
+"use strict";
+
 import { Courses, Persons } from "../data/dataHandler";
 import { Course } from "../types/course";
 import { Person } from "../types/person";
-import { getRandomUUID } from "./utils/getRandomId";
+import { getUnusedCourseUUID } from "./utils/UUID";
 
 export default {
   getCourse: async (
@@ -27,7 +29,7 @@ export default {
     { course }: { course: Omit<Omit<Course, "UUID">, "studentIds"> }
   ): Promise<Course> => {
     const finalCourse: Course = {
-      UUID: getRandomUUID(4),
+      UUID: await getUnusedCourseUUID(),
       studentIds: [],
       ...course,
     };
@@ -41,13 +43,16 @@ export default {
     _: unknown,
     { courses }: { courses: Omit<Omit<Course, "UUID">, "studentIds">[] }
   ): Promise<Course[]> => {
-    const finalCourses: Course[] = courses.map((course) => ({
-      UUID: getRandomUUID(4),
-      studentIds: [],
-      ...course,
-    }));
-    Courses.collection.insertMany(finalCourses);
+    const finalCourses: Course[] = [];
+    for (const course of courses) {
+      finalCourses.push({
+        UUID: await getUnusedCourseUUID(),
+        studentIds: [],
+        ...course,
+      });
+    }
 
+    Courses.collection.insertMany(finalCourses);
     return finalCourses;
   },
 

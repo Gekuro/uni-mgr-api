@@ -1,0 +1,19 @@
+type Query {
+  account(UUID: ID!): Account
+  accounts: [Account]!
+  self: Account
+}
+
+type Mutation {
+  registerAccount(UUID: ID!, password: String!): RegisterStatus
+}
+
+type Account {
+  UUID: ID!
+  personalData: Person!
+}
+
+type RegisterStatus {
+  success: Boolean!
+  error: String
+}

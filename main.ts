@@ -9,6 +9,7 @@ import { loadSchema } from "@graphql-tools/load";
 import { isEnvValid, CorrectEnv } from "./types/validators";
 import { connectDb } from "./data/dataHandler";
 import resolvers from "./resolvers/resolvers";
+import { loginRoute, readTokenIntoContext } from "./auth/auth";
 
 isEnvValid(process.env);
 const env = process.env as CorrectEnv;
@@ -16,7 +17,7 @@ const env = process.env as CorrectEnv;
 const app = fastify();
 
 async function loadServer(): Promise<void> {
-  connectDb();
+  await connectDb();
 
   const schema = await loadSchema("./schema/*.gql", {
     cwd: __dirname,
@@ -24,15 +25,16 @@ async function loadServer(): Promise<void> {
     loaders: [new GraphQLFileLoader()],
   });
 
+  app.route(loginRoute);
+
   app.register(mercurius, {
     schema,
     resolvers,
     graphiql: true,
+    context: readTokenIntoContext,
   });
 
-  app.listen({ port: parseInt(env.API_PORT) });
-
-  console.log(`listening @ port ${process.env.API_PORT}`);
+  await app.listen({ port: parseInt(env.API_PORT) });
 }
 
-loadServer();
+loadServer().then(() => console.log(`listening @ port ${env.API_PORT}`));
