@@ -1,5 +1,4 @@
-import jwt from "jsonwebtoken";
-import { Credentials } from "./account";
+import { Credentials } from "./account.ts";
 
 export interface CorrectEnv {
   API_PORT: string;
@@ -9,21 +8,8 @@ export interface CorrectEnv {
   EXPIRES_IN: string;
 }
 
-export interface CorrectJWT extends jwt.JwtPayload {
+export interface CorrectJWT {
   UUID: string;
-}
-
-export function isEnvValid(env: object): asserts env is CorrectEnv {
-  [
-    "API_PORT",
-    "MONGO_CONN_STR",
-    "MONGO_DB_NAME",
-    "SESSION_SECRET",
-    "EXPIRES_IN",
-  ].forEach((key: string) => {
-    if (!env.hasOwnProperty(key))
-      throw new Error(`missing .env variable: ${key}`);
-  });
 }
 
 export function isObjectUndefined(
@@ -33,12 +19,12 @@ export function isObjectUndefined(
 }
 
 export function isTokenBodyValid(
-  token: string | jwt.JwtPayload
+  token: string | object
 ): asserts token is CorrectJWT {
   const invTokenError = new Error("invalid token");
 
   if (typeof token === "string") throw invTokenError;
-  if (!token.hasOwnProperty("UUID")) throw invTokenError;
+  if (Object.prototype.hasOwnProperty.call(token, "UUID")) throw invTokenError;
 }
 
 export function isCredentialsObjValid(
@@ -47,6 +33,9 @@ export function isCredentialsObjValid(
   const invCredentialsObj = new Error("invalid credentials");
 
   if (typeof body !== "object" || body === null) throw invCredentialsObj;
-  if (!body.hasOwnProperty("UUID") || !body.hasOwnProperty("password"))
+  if (
+    Object.prototype.hasOwnProperty.call(body, "UUID") ||
+    Object.prototype.hasOwnProperty.call(body, "password")
+  )
     throw invCredentialsObj;
 }

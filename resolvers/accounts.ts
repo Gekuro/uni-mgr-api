@@ -1,21 +1,19 @@
 "use strict";
 
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import jwt from "npm:jsonwebtoken";
+import bcrypt from "npm:bcryptjs";
 
-import { register } from "../auth/auth";
-import { Persons, Accounts } from "../data/dataHandler";
+import { register } from "../auth/auth.ts";
+import { Persons, Accounts } from "../data/dataHandler.ts";
 import {
   AccountGQLReply,
   Credentials,
   LoginStatus,
   RegisterStatus,
-} from "../types/account";
-import { ServerContext } from "../types/context";
-import { Person } from "../types/person";
-import { CorrectEnv } from "../types/validators";
+} from "../types/account.ts";
+import { ServerContext } from "../types/context.ts";
+import { Person } from "../types/person.ts";
 
-const env = process.env as unknown as CorrectEnv; // vaildated in main.ts
 const wrongCredentials = new Error("UUID or password are invalid");
 
 export default {
@@ -66,9 +64,13 @@ export default {
       if (!(await bcrypt.compare(credentials.password, account.passwordHash)))
         throw wrongCredentials;
 
-      const token = jwt.sign({ UUID: credentials.UUID }, env.SESSION_SECRET, {
-        expiresIn: env.EXPIRES_IN,
-      });
+      const token = jwt.sign(
+        { UUID: credentials.UUID },
+        Deno.env.get("SESSION_SECRET")!,
+        {
+          expiresIn: Deno.env.get("EXPIRES_IN")!,
+        }
+      );
 
       return {
         token: { Authorization: `Bearer ${token}` },

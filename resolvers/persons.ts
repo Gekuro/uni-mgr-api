@@ -1,9 +1,9 @@
 "use strict";
 
-import { Persons, Courses } from "../data/dataHandler";
-import { Course } from "../types/course";
-import { Person, PersonType } from "../types/person";
-import { getUnusedPersonUUID } from "./utils/UUID";
+import { Persons, Courses } from "../data/dataHandler.ts";
+import { Course } from "../types/course.ts";
+import { Person, PersonType } from "../types/person.ts";
+import { getUnusedPersonUUID } from "./utils/UUID.ts";
 
 export default {
   getPerson: async (

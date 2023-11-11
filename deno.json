@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std/"
+  },
+  "tasks": {
+    "dev": "deno run --watch main.ts"
+  },
+  "no-prototype-builtins": false
+}

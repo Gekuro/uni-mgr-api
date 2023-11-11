@@ -1,10 +1,10 @@
 "use strict";
 
-import { IResolvers } from "mercurius";
+import { IResolvers } from "npm:mercurius";
 
-import persons from "./persons";
-import courses from "./courses";
-import accounts from "./accounts";
+import persons from "./persons.ts";
+import courses from "./courses.ts";
+import accounts from "./accounts.ts";
 
 const resolvers: IResolvers = {
   Query: {

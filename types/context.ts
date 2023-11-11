@@ -2,6 +2,6 @@ export type ServerContext = {
   UUID?: string;
 };
 
-declare module "mercurius" {
+declare module "npm:mercurius" {
   interface MercuriusContext extends ServerContext {}
 }

@@ -1,18 +1,14 @@
 "use strict";
 
-import fastify from "fastify";
-import mercurius from "mercurius";
-import "dotenv/config";
-import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
-import { loadSchema } from "@graphql-tools/load";
+import fastify from "npm:fastify";
+import mercurius from "npm:mercurius";
+import "npm:dotenv/config";
+import { GraphQLFileLoader } from "npm:@graphql-tools/graphql-file-loader";
+import { loadSchema } from "npm:@graphql-tools/load";
 
-import { isEnvValid, CorrectEnv } from "./types/validators";
-import { connectDb } from "./data/dataHandler";
-import resolvers from "./resolvers/resolvers";
-import { readTokenIntoContext } from "./auth/auth";
-
-isEnvValid(process.env);
-const env = process.env as CorrectEnv;
+import { connectDb } from "./data/dataHandler.ts";
+import resolvers from "./resolvers/resolvers.ts";
+import { readTokenIntoContext } from "./auth/auth.ts";
 
 const app = fastify();
 
@@ -20,19 +16,22 @@ async function loadServer(): Promise<void> {
   await connectDb();
 
   const schema = await loadSchema("./schema/*.gql", {
-    cwd: __dirname,
+    cwd: new URL(".", import.meta.url).pathname,
     assumeValid: true,
     loaders: [new GraphQLFileLoader()],
   });
 
-  app.register(mercurius, {
+  app.register(mercurius.default, {
+    // TODO get rid of .default
     schema,
     resolvers,
     graphiql: true,
     context: readTokenIntoContext,
   });
 
-  await app.listen({ port: parseInt(env.API_PORT) });
+  await app.listen({ port: parseInt(Deno.env.get("API_PORT")!) });
 }
 
-loadServer().then(() => console.log(`listening @ port ${env.API_PORT}`));
+loadServer().then(() =>
+  console.log(`listening @ port ${Deno.env.get("API_PORT")!}`)
+);

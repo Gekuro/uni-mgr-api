@@ -1,13 +1,13 @@
 "use strict";
 
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import { CorrectEnv, isTokenBodyValid } from "../types/validators";
-import { FastifyRequest, RouteOptions } from "fastify";
-import { ServerContext } from "../types/context";
-import { Accounts, Persons } from "../data/dataHandler";
+import jwt from "npm:jsonwebtoken";
+import bcrypt from "npm:bcryptjs";
+import { FastifyRequest } from "npm:fastify";
 
-const env = process.env as unknown as CorrectEnv; // vaildated in main.ts
+import { isTokenBodyValid } from "../types/validators.ts";
+import { ServerContext } from "../types/context.ts";
+import { Accounts, Persons } from "../data/dataHandler.ts";
+
 const DIGITS = "1234567890";
 const SPECIAL_CHARACTERS = "!@#$%^&*?<>(){}[]:;'\"\\";
 const LETTERS = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
@@ -42,12 +42,12 @@ export const readTokenIntoContext = async (
   try {
     const token = req.headers["authorization"].split(" ")[1];
 
-    let decoded = jwt.verify(token, env.SESSION_SECRET);
+    const decoded = jwt.verify(token, Deno.env.get("SESSION_SECRET")!);
     isTokenBodyValid(decoded);
     return {
       UUID: decoded.UUID,
     };
-  } catch (err) {
+  } catch (_err) {
     return {};
   }
 };
@@ -57,13 +57,13 @@ const isPasswordAllowed = (password: string): boolean => {
   // should include at least one letter, digit and special character,
   // and cannot include emojis and the like.
   const containsOneOf = (str: string, chars: string): boolean => {
-    for (let letter of str) {
+    for (const letter of str) {
       if (chars.includes(letter)) return true;
     }
     return false;
   };
 
-  for (let letter of password) {
+  for (const letter of password) {
     if (
       !DIGITS.includes(letter) &&
       !SPECIAL_CHARACTERS.includes(letter) &&

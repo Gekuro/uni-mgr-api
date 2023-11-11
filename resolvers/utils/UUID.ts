@@ -1,4 +1,4 @@
-import { Courses, Persons } from "../../data/dataHandler";
+import { Courses, Persons } from "../../data/dataHandler.ts";
 
 const PERSON_UUID_LEN = 6;
 const COURSE_UUID_LEN = 4;
