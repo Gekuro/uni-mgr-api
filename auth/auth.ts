@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { CorrectEnv, isTokenBodyValid } from "../types/validators";
 import { FastifyRequest, RouteOptions } from "fastify";
 import { ServerContext } from "../types/context";
-import { Accounts, Persons } from "../data/dataHandler";
+import { Store } from "../data/store";
 
 const env = process.env as unknown as CorrectEnv; // vaildated in main.ts
 const DIGITS = "1234567890";
@@ -16,10 +16,11 @@ export const register = async (
   UUID: string,
   password: string
 ): Promise<void> => {
+  const store = Store.getStore();
   if (!isPasswordAllowed(password)) throw new Error("password is not allowed");
 
-  const account = await Accounts.collection.findOne({ UUID });
-  const person = await Persons.collection.findOne({ UUID });
+  const account = await store.accounts.findOne({ UUID });
+  const person = await store.persons.findOne({ UUID });
 
   if (account !== null)
     throw new Error("account associated with this UUID already exists");
@@ -29,7 +30,7 @@ export const register = async (
   const salt = await bcrypt.genSalt();
   const passwordHash = await bcrypt.hash(password, salt);
 
-  await Accounts.collection.insertOne({ UUID, passwordHash });
+  await store.accounts.insertOne({ UUID, passwordHash });
 };
 
 export const readTokenIntoContext = async (

@@ -1,4 +1,4 @@
-import { Courses, Persons } from "../../data/dataHandler";
+import { Store } from "../../data/store";
 
 const PERSON_UUID_LEN = 6;
 const COURSE_UUID_LEN = 4;
@@ -15,15 +15,17 @@ const getRandomUUID = (length: number): string => {
 };
 
 export const getUnusedPersonUUID = async (): Promise<string> => {
+  const store = Store.getStore();
   while (true) {
     const UUID = getRandomUUID(PERSON_UUID_LEN);
-    if ((await Persons.collection.findOne({ UUID })) === null) return UUID;
+    if ((await store.persons.findOne({ UUID })) === null) return UUID;
   }
 };
 
 export const getUnusedCourseUUID = async (): Promise<string> => {
+  const store = Store.getStore();
   while (true) {
     const UUID = getRandomUUID(COURSE_UUID_LEN);
-    if ((await Courses.collection.findOne({ UUID })) === null) return UUID;
+    if ((await store.courses.findOne({ UUID })) === null) return UUID;
   }
 };

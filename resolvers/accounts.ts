@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 import { register } from "../auth/auth";
-import { Persons, Accounts } from "../data/dataHandler";
+import { Store } from "../data/store";
 import {
   AccountGQLReply,
   Credentials,
@@ -23,14 +23,16 @@ export default {
     _: unknown,
     { UUID }: { UUID: string }
   ): Promise<AccountGQLReply | null> => {
-    return await Accounts.collection.findOne(
+    const store = Store.getStore();
+    return await store.accounts.findOne(
       { UUID: UUID },
       { projection: { passwordHash: 0 } }
     );
   },
 
   getAccounts: async (): Promise<AccountGQLReply[]> => {
-    const cursor = Accounts.collection.find();
+    const store = Store.getStore();
+    const cursor = store.accounts.find();
 
     const accounts: AccountGQLReply[] = [];
     for await (const account of cursor) {
@@ -45,9 +47,10 @@ export default {
     _params: unknown,
     ctx: ServerContext
   ): Promise<AccountGQLReply | null> => {
+    const store = Store.getStore();
     if (!ctx.UUID) return null;
 
-    return await Accounts.collection.findOne(
+    return await store.accounts.findOne(
       { UUID: ctx.UUID },
       { projection: { passwordHash: 0 } }
     );
@@ -57,8 +60,9 @@ export default {
     _: unknown,
     { credentials }: { credentials: Credentials }
   ): Promise<LoginStatus> => {
+    const store = Store.getStore();
     try {
-      const account = await Accounts.collection.findOne({
+      const account = await store.accounts.findOne({
         UUID: credentials.UUID,
       });
       if (account === null) throw wrongCredentials;
@@ -91,7 +95,8 @@ export default {
   },
 
   personalData: async (root: AccountGQLReply): Promise<Person> => {
-    const person = (await Persons.collection.findOne({
+    const store = Store.getStore();
+    const person = (await store.persons.findOne({
       UUID: root.UUID,
     })) as Person;
     // accounts can only be registered for existing persons, so this will never be null

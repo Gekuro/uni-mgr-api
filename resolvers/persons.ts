@@ -1,6 +1,6 @@
 "use strict";
 
-import { Persons, Courses } from "../data/dataHandler";
+import { Store } from "../data/store";
 import { Course } from "../types/course";
 import { Person, PersonType } from "../types/person";
 import { getUnusedPersonUUID } from "./utils/UUID";
@@ -10,14 +10,16 @@ export default {
     _: unknown,
     { UUID }: { UUID: string }
   ): Promise<Person | null> => {
-    return await Persons.collection.findOne({ UUID: UUID });
+    const store = Store.getStore();
+    return await store.persons.findOne({ UUID: UUID });
   },
 
   getPersons: async (
     _: unknown,
     params: { name?: string; surname?: string; type?: PersonType }
   ): Promise<Person[]> => {
-    const cursor = Persons.collection.find(params);
+    const store = Store.getStore();
+    const cursor = store.persons.find(params);
 
     const persons: Person[] = [];
     for await (const person of cursor) {
@@ -31,12 +33,13 @@ export default {
     _: unknown,
     { person }: { person: Omit<Person, "UUID"> }
   ): Promise<Person> => {
+    const store = Store.getStore();
     const finalPerson: Person = {
       UUID: await getUnusedPersonUUID(),
       ...person,
     };
 
-    Persons.collection.insertOne(finalPerson); // TODO should these be awaited?
+    store.persons.insertOne(finalPerson); // TODO should these be awaited?
     return finalPerson;
   },
 
@@ -44,6 +47,7 @@ export default {
     _: unknown,
     { persons }: { persons: Omit<Person, "UUID">[] }
   ): Promise<Person[]> => {
+    const store = Store.getStore();
     const finalPersons: Person[] = [];
     for (const person of persons) {
       finalPersons.push({
@@ -52,7 +56,7 @@ export default {
       });
     }
 
-    Persons.collection.insertMany(finalPersons);
+    store.persons.insertMany(finalPersons);
     return finalPersons;
   },
 
@@ -60,7 +64,8 @@ export default {
     _: unknown,
     { UUID, person }: { UUID: string; person: Partial<Omit<Person, "UUID">> }
   ): Promise<Person | null> => {
-    const result = await Persons.collection.findOneAndUpdate(
+    const store = Store.getStore();
+    const result = await store.persons.findOneAndUpdate(
       { UUID: UUID },
       {
         $set: {
@@ -76,7 +81,8 @@ export default {
   },
 
   attendingField: async (root: Person): Promise<Course[]> => {
-    const cursor = Courses.collection.find({ studentIds: root.UUID });
+    const store = Store.getStore();
+    const cursor = store.courses.find({ studentIds: root.UUID });
 
     const courses: Course[] = [];
     for await (const course of cursor) {
@@ -87,7 +93,8 @@ export default {
   },
 
   lecturingField: async (root: Person): Promise<Course[]> => {
-    const cursor = Courses.collection.find({ lecturerId: root.UUID });
+    const store = Store.getStore();
+    const cursor = store.courses.find({ lecturerId: root.UUID });
 
     const courses: Course[] = [];
     for await (const course of cursor) {

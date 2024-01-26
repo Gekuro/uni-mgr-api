@@ -8,7 +8,7 @@ import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
 import { loadSchema } from "@graphql-tools/load";
 
 import { isEnvValid, CorrectEnv } from "./types/validators";
-import { connectDb } from "./data/dataHandler";
+import { connectDb } from "./data/store";
 import resolvers from "./resolvers/resolvers";
 import { readTokenIntoContext } from "./auth/auth";
 
