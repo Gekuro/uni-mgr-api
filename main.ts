@@ -1,6 +1,7 @@
 "use strict";
 
 import fastify from "fastify";
+import cors from "@fastify/cors";
 import mercurius from "mercurius";
 import "dotenv/config";
 import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
@@ -24,6 +25,11 @@ async function loadServer(): Promise<void> {
     assumeValid: true,
     loaders: [new GraphQLFileLoader()],
   });
+
+  if (env.CORS_ENABLED === "true") {
+    console.log("CORS enabled from origin *");
+    app.register(cors, { origin: env.CORS_ENABLED_ORIGIN });
+  }
 
   app.register(mercurius, {
     schema,

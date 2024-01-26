@@ -8,7 +8,7 @@ import { Account } from "../types/account";
 import { CollectionHandler } from "./collectionHandler";
 
 const env = process.env as unknown as CorrectEnv; // vaildated in main.ts
-const client: MongoClient = new MongoClient(env.MONGO_CONN_STR);
+let client: MongoClient;
 
 // define collections here
 export let Persons: CollectionHandler<Person>;
@@ -17,6 +17,7 @@ export let Accounts: CollectionHandler<Account>;
 
 let database: Db;
 export async function connectDb() {
+  client = new MongoClient(env.MONGO_CONN_STR);
   await client.connect();
 
   await client.db(env.MONGO_DB_NAME).command({ ping: 1 });

@@ -30,6 +30,21 @@ pnpm start
 
 The `start` script runs the TypeScript compiler and then runs the project with NodeJS. I do not run this project using `ts-node`.
 
+## Containerization
+
+To create a standalone container for the api service, use this command
+
+```bash
+docker build -t uni-mgr-api .
+docker run -p 8001:8001 -d uni-mgr-api
+```
+
+Alternatively, create a stack with `docker-compose`
+
+```bash
+docker-compose -f .\compose.yaml up 
+```
+
 ## Endpoints
 
 As usual, querying GraphQL is possible at `/graphql`. To try and design queries and mutations, `/graphiql` is also enabled by default.

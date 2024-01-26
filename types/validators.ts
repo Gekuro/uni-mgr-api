@@ -3,6 +3,8 @@ import { Credentials } from "./account";
 
 export interface CorrectEnv {
   API_PORT: string;
+  CORS_ENABLED: string;
+  CORS_ENABLED_ORIGIN: string;
   MONGO_CONN_STR: string;
   MONGO_DB_NAME: string;
   SESSION_SECRET: string;
@@ -16,13 +18,14 @@ export interface CorrectJWT extends jwt.JwtPayload {
 export function isEnvValid(env: object): asserts env is CorrectEnv {
   [
     "API_PORT",
+    "CORS_ENABLED",
+    "CORS_ENABLED_ORIGIN",
     "MONGO_CONN_STR",
     "MONGO_DB_NAME",
     "SESSION_SECRET",
     "EXPIRES_IN",
   ].forEach((key: string) => {
-    if (!env.hasOwnProperty(key))
-      throw new Error(`missing .env variable: ${key}`);
+    if (!(key in env)) throw new Error(`missing .env variable: ${key}`);
   });
 }
 
@@ -38,7 +41,7 @@ export function isTokenBodyValid(
   const invTokenError = new Error("invalid token");
 
   if (typeof token === "string") throw invTokenError;
-  if (!token.hasOwnProperty("UUID")) throw invTokenError;
+  if (!("UUID" in token)) throw invTokenError;
 }
 
 export function isCredentialsObjValid(
@@ -47,6 +50,5 @@ export function isCredentialsObjValid(
   const invCredentialsObj = new Error("invalid credentials");
 
   if (typeof body !== "object" || body === null) throw invCredentialsObj;
-  if (!body.hasOwnProperty("UUID") || !body.hasOwnProperty("password"))
-    throw invCredentialsObj;
+  if (!("UUID" in body) || !("password" in body)) throw invCredentialsObj;
 }
