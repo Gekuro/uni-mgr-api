@@ -27,7 +27,7 @@ async function loadServer(): Promise<void> {
   });
 
   if (env.CORS_ENABLED === "true") {
-    console.log("CORS enabled from origin *");
+    console.log(`CORS enabled from origin ${env.CORS_ENABLED_ORIGIN}`);
     app.register(cors, { origin: env.CORS_ENABLED_ORIGIN });
   }
 
@@ -38,7 +38,10 @@ async function loadServer(): Promise<void> {
     context: readTokenIntoContext,
   });
 
-  await app.listen({ port: parseInt(env.API_PORT) });
+  await app.listen({
+    port: parseInt(env.API_PORT),
+    host: env.API_HOST,
+  });
 }
 
 loadServer().then(() => console.log(`listening @ port ${env.API_PORT}`));

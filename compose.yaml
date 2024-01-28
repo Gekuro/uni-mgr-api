@@ -10,8 +10,9 @@ services:
     depends_on:
       - mongo
     environment:
-      - CORS_ENABLED=true
       - MONGO_CONN_STR=mongodb://mongo:27017
+      - API_PORT=8001
+      - API_HOST=0.0.0.0
   mongo:
     image: mongo
     restart: always

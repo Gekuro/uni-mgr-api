@@ -3,6 +3,7 @@ import { Credentials } from "./account";
 
 export interface CorrectEnv {
   API_PORT: string;
+  API_HOST: string;
   CORS_ENABLED: string;
   CORS_ENABLED_ORIGIN: string;
   MONGO_CONN_STR: string;
@@ -18,6 +19,7 @@ export interface CorrectJWT extends jwt.JwtPayload {
 export function isEnvValid(env: object): asserts env is CorrectEnv {
   [
     "API_PORT",
+    "API_HOST",
     "CORS_ENABLED",
     "CORS_ENABLED_ORIGIN",
     "MONGO_CONN_STR",
