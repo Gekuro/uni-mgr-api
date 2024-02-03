@@ -13,8 +13,16 @@ services:
       - MONGO_CONN_STR=mongodb://mongo:27017
       - API_PORT=8001
       - API_HOST=0.0.0.0
+    networks:
+      - main
   mongo:
     image: mongo
     restart: always
     ports:
       - 27017:27017
+    networks:
+      - main
+
+networks:
+  main:
+    driver: bridge

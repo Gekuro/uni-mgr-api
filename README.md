@@ -32,7 +32,7 @@ The `start` script runs the TypeScript compiler and then runs the project with N
 
 ## Containerization
 
-To create a standalone container for the api service, use this command
+To create a standalone container for the API service, use this command
 
 ```bash
 docker build -t uni-mgr-api .
@@ -42,8 +42,10 @@ docker run -p 8001:8001 -d uni-mgr-api
 Alternatively, create a stack with `docker-compose`
 
 ```bash
-docker-compose -f .\compose.yaml up 
+docker compose up 
 ```
+
+As of right now, the image ignores the `pnpm-lock.yaml` and uses `npm` instead of `pnpm`. This will get changed in the future.
 
 ## Endpoints
 
@@ -78,7 +80,6 @@ Authorization is not yet implemented. Currently the only use of the context obta
 
 ## Wishlist
 
-- Use the [Effect](https://effect.website/) library to reduce try/catch usage
 - Add authorization logic:
   - Allow customization of permissions for all queries
   - Add built-in admin credentials to .env to avoid the need to create the first admin in the database directly
