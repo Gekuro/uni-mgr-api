@@ -1,0 +1,26 @@
+type Query {
+    courseActivities(courseId: ID!): [Activity]!
+}
+
+type Mutation {
+    addActivity(activity: ActivityInput!): Activity!
+    addActivities(activity: [ActivityInput!]!): [Activity!]!
+    updateActivity(activity: ActivityInput!): Activity!
+}
+
+# in all types, where name and final optional values exist
+# one of them is required, and both cannot exist at once
+type Activity {
+    course: Course!
+    grades: [Grade]!
+    limit: Int!
+    name: String
+    final: Boolean
+}
+
+input ActivityInput {
+    courseId: ID!
+    limit: Int!
+    name: String
+    final: Boolean
+}

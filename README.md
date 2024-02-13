@@ -80,6 +80,9 @@ Authorization is not yet implemented. Currently the only use of the context obta
 
 ## Wishlist
 
+- Testing
+- Linting
+- Generate TS to other folder
 - Add authorization logic:
   - Allow customization of permissions for all queries
   - Add built-in admin credentials to .env to avoid the need to create the first admin in the database directly
