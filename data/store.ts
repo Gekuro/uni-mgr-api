@@ -28,7 +28,7 @@ export class Store {
   public courses: Collection<Course>;
   public accounts: Collection<Account>;
   public grades: Collection<Grade>;
-  public activites: Collection<Activity>;
+  public activities: Collection<Activity>;
 
   private db: Db;
 
@@ -42,7 +42,7 @@ export class Store {
     this.courses = this.db.collection<Course>("courses");
     this.accounts = this.db.collection<Account>("accounts");
     this.grades = this.db.collection<Grade>("grades");
-    this.activites = this.db.collection<Activity>("activites");
+    this.activities = this.db.collection<Activity>("activites");
   }
 
   public static getStore() {

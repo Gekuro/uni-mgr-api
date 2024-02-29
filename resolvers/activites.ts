@@ -2,6 +2,8 @@
 
 import { Store } from "../data/store";
 import { Activity, ActivityInput } from "../types/activity";
+import { Course } from "../types/course";
+import { Grade } from "../types/grade";
 import {
   isActivityInputArrayValid,
   isActivityInputValid,
@@ -21,7 +23,7 @@ const concatActivityDetails = (
 
 const assertActivityDoesntExist = async (activity: Activity) => {
   const store = Store.getStore();
-  const existingActivity = await store.activites.findOne({
+  const existingActivity = await store.activities.findOne({
     courseId: activity.courseId,
     final: activity.final,
     ...(!activity.final && { name: activity.name }),
@@ -39,7 +41,7 @@ export default {
     { courseId }: { courseId: string }
   ): Promise<Activity[]> => {
     const store = Store.getStore();
-    const cursor = store.activites.find({ courseId });
+    const cursor = store.activities.find({ courseId });
 
     const activities: Activity[] = [];
     for await (const activity of cursor) {
@@ -57,6 +59,7 @@ export default {
     if (!isActivityInputValid(activity)) {
       throw new Error(invalidActivity);
     }
+    const delayedAssertion = assertActivityDoesntExist(activity);
 
     const newActivity: Activity = {
       courseId: activity.courseId,
@@ -64,9 +67,10 @@ export default {
       final: activity.final ?? false,
       ...(!activity.final && { name: activity.name }),
     };
-    await assertActivityDoesntExist(newActivity);
 
-    store.activites.insertOne(newActivity);
+    await delayedAssertion;
+
+    store.activities.insertOne(newActivity);
     return newActivity;
   },
 
@@ -94,7 +98,7 @@ export default {
     }
     await Promise.all(assertionPromises);
 
-    store.activites.insertMany(newActivities);
+    store.activities.insertMany(newActivities);
     return newActivities;
   },
 
@@ -103,10 +107,9 @@ export default {
     { activity }: { activity: ActivityInput }
   ): Promise<Activity | null> => {
     const store = Store.getStore();
-
     if (!isActivityInputValid(activity)) throw new Error(invalidActivity);
 
-    const result = await store.activites.findOneAndUpdate(
+    const result = await store.activities.findOneAndUpdate(
       {
         courseId: activity.courseId,
         final: activity.final ?? false,
@@ -123,5 +126,26 @@ export default {
     );
 
     return result;
+  },
+
+  courseField: async (root: Activity): Promise<Course | null> => {
+    const store = Store.getStore();
+    return store.courses.findOne({ UUID: root.courseId });
+  },
+
+  gradesField: async (root: Activity): Promise<Grade[]> => {
+    const store = Store.getStore();
+    const cursor = store.grades.find({
+      courseId: root.courseId,
+      final: root.final,
+      ...(!root.final && { name: root.name }),
+    });
+
+    const grades: Grade[] = [];
+    for await (const grade of cursor) {
+      grades.push(grade);
+    }
+
+    return grades;
   },
 };

@@ -1,6 +1,7 @@
 "use strict";
 
 import { Store } from "../data/store";
+import { Account } from "../types/account";
 import { Course } from "../types/course";
 import { Person, PersonType } from "../types/person";
 import { getUnusedPersonUUID } from "./utils/UUID";
@@ -103,4 +104,7 @@ export default {
 
     return courses;
   },
+
+  accountField: async (root: Person): Promise<Account | null> =>
+    Store.getStore().accounts.findOne({ UUID: root.UUID }),
 };

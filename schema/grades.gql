@@ -1,5 +1,5 @@
 type Query {
-    grades(courseId: ID, studentId: ID, final: Boolean): [Grade]!
+    grades(courseId: ID, studentId: ID, final: Boolean, name: String): [Grade]!
 }
 
 type Mutation {
@@ -9,9 +9,11 @@ type Mutation {
 }
 
 type Grade {
-    student: Person!
-    activity: Activity!
+    student: Person
+    activity: Activity
     points: Int!
+    final: Boolean!
+    name: String
 }
 
 input GradeInput {

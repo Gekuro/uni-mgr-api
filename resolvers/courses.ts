@@ -80,10 +80,8 @@ export default {
     return result;
   },
 
-  lecturerField: async (root: Course): Promise<Person | null> => {
-    const store = Store.getStore();
-    return await store.persons.findOne({ UUID: root.lecturerId });
-  },
+  lecturerField: async (root: Course): Promise<Person | null> =>
+    Store.getStore().persons.findOne({ UUID: root.lecturerId }),
 
   studentsField: async (root: Course): Promise<Person[]> => {
     const store = Store.getStore();

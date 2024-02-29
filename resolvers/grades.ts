@@ -4,13 +4,14 @@ import { Filter } from "mongodb";
 import { Store } from "../data/store";
 import { Grade, GradeInput } from "../types/grade";
 import { isGradeInputArrayValid, isGradeInputValid } from "../types/validators";
+import { Person } from "../types/person";
+import { Activity } from "../types/activity";
 
 const invalidGrade = "Non-final grades need to have a name";
 const gradeExistsMsg = "Set student already has this grade";
 const activityDoesntExistMsg = "Cannot set grade for non-existent activity";
 const studentFinalGradeExistsMsg =
   "Student already has final grade for this course";
-const gradeOverLimitMsg = "Grade is over set limit";
 
 const concatGradeDetails = (grade: GradeInput | Grade, msg: string): string =>
   msg +
@@ -39,13 +40,15 @@ export default {
       courseId,
       studentId,
       final,
-    }: { courseId?: string; studentId?: string; final?: boolean }
+      name,
+    }: { courseId?: string; studentId?: string; final?: boolean; name?: string }
   ): Promise<Grade[]> => {
     const store = Store.getStore();
     const filter: Filter<Grade> = {
       ...(courseId && { courseId }),
       ...(studentId && { studentId }),
-      ...(final && { final: true }),
+      ...(final && { final }),
+      ...(name && { name }),
     };
     const cursor = store.grades.find(filter);
 
@@ -63,16 +66,18 @@ export default {
   ): Promise<Grade> => {
     const store = Store.getStore();
     if (!isGradeInputValid(grade)) throw new Error(invalidGrade);
-    await assertGradeDoesntExist(grade);
+    const delayedAssertion = assertGradeDoesntExist(grade);
 
     if (grade.final && grade.name) delete grade.name;
 
-    const activity = await store.activites.findOne({
+    const activity = await store.activities.findOne({
       courseId: grade.courseId,
       name: grade.name,
     });
     if (!activity)
       throw new Error(concatGradeDetails(grade, activityDoesntExistMsg));
+
+    await delayedAssertion;
 
     store.grades.insertOne(grade);
     return grade;
@@ -87,15 +92,14 @@ export default {
       throw new Error(invalidGrade);
     }
 
-    const assertionPromises: Promise<void>[] = [];
+    const delayedAssertions: Promise<void>[] = [];
     for (const grade of grades) {
-      assertionPromises.push(assertGradeDoesntExist(grade));
+      delayedAssertions.push(assertGradeDoesntExist(grade));
       if (grade.final && grade.name) delete grade.name;
     }
-    await Promise.all(assertionPromises);
 
     for (const grade of grades) {
-      const activity = await store.activites.findOne({
+      const activity = await store.activities.findOne({
         courseId: grade.courseId,
         studentId: grade.studentId,
         final: grade.final,
@@ -106,6 +110,8 @@ export default {
         throw new Error(concatGradeDetails(grade, activityDoesntExistMsg));
     }
 
+    await Promise.all(delayedAssertions);
+
     store.grades.insertMany(grades);
     return grades;
   },
@@ -115,7 +121,6 @@ export default {
     { grade }: { grade: GradeInput }
   ): Promise<Grade | null> => {
     const store = Store.getStore();
-
     if (!isGradeInputValid(grade)) throw new Error(invalidGrade);
 
     const result = await store.grades.findOneAndUpdate(
@@ -137,4 +142,14 @@ export default {
 
     return result;
   },
+
+  studentField: async (root: Grade): Promise<Person | null> =>
+    Store.getStore().persons.findOne({ UUID: root.studentId }),
+
+  activityField: async (root: Grade): Promise<Activity | null> =>
+    Store.getStore().activities.findOne({
+      final: root.final,
+      ...(!root.final && { name: root.name }),
+      courseId: root.courseId,
+    }),
 };

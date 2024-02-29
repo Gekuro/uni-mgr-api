@@ -21,7 +21,7 @@ I am not planning on expanding this project with any frontend implementations. I
 
 ## How To
 
-Using PNPM is recommended with this project. Make sure you edit the `.env` file, **especially the session secret,** and you have a MongoDB instance you can connect to.
+Using PNPM is recommended with this project. Make sure you edit the `.env` file, **especially the session secret,** and that you have a MongoDB instance you can connect to.
 
 ```bash
 pnpm i
