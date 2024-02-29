@@ -12,8 +12,6 @@ type Grade {
     student: Person
     activity: Activity
     points: Int!
-    final: Boolean!
-    name: String
 }
 
 input GradeInput {
