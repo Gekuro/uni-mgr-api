@@ -1,16 +1,9 @@
-export type FinalGradeActivity = {
+export type Activity = {
   courseId: string;
   limit: number;
   final: boolean;
+  name?: string;
 };
-
-export type NamedActivity = {
-  courseId: string;
-  limit: number;
-  name: string;
-};
-
-export type Activity = FinalGradeActivity | NamedActivity;
 
 export type ActivityInput = {
   courseId: string;

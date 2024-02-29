@@ -5,7 +5,7 @@ type Query {
 type Mutation {
     addGrade(grade: GradeInput!): Grade!
     addGrades(grades: [GradeInput!]!): [Grade!]!
-    updateGrade(grade: GradeInput!): Grade!
+    updateGrade(grade: GradeInput!): Grade
 }
 
 type Grade {
@@ -14,12 +14,10 @@ type Grade {
     points: Int!
 }
 
-# in all types, where name and final optional values exist
-# one of them is required, and both cannot exist at once
 input GradeInput {
     studentId: ID!
     courseId: ID!
     points: Int!
-    name: String
     final: Boolean
+    name: String
 }

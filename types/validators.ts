@@ -58,9 +58,7 @@ export function isCredentialsObjValid(
 }
 
 export const isGradeInputValid = (grade: GradeInput): grade is Grade =>
-  !("name" in grade && "final" in grade) &&
-  !(!("name" in grade) && !("final" in grade)) &&
-  !(grade.name === undefined && grade.final === undefined);
+  grade.final === true || ("name" in grade && Boolean(grade.name));
 
 export const isGradeInputArrayValid = (
   grades: GradeInput[]
@@ -69,9 +67,7 @@ export const isGradeInputArrayValid = (
 export const isActivityInputValid = (
   activity: ActivityInput
 ): activity is Activity =>
-  !("name" in activity && "final" in activity) &&
-  !(!("name" in activity) && !("final" in activity)) &&
-  !(activity.name === undefined && activity.final === undefined);
+  activity.final === true || ("name" in activity && Boolean(activity.name));
 
 export const isActivityInputArrayValid = (
   activities: ActivityInput[]

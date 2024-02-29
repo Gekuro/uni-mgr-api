@@ -86,7 +86,5 @@ Authorization is not yet implemented. Currently the only use of the context obta
 - Add authorization logic:
   - Allow customization of permissions for all queries
   - Add built-in admin credentials to .env to avoid the need to create the first admin in the database directly
-- Expand the data model:
-  - Add sub-organizations (institutes and the like)
-  - Add directSupervisor field
-  - Add groups and majors/year presets
+- Adding and removing students to and from existing courses
+- Timestamps (createdAt, updatedAt)

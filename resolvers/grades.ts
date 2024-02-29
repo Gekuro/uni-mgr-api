@@ -5,8 +5,7 @@ import { Store } from "../data/store";
 import { Grade, GradeInput } from "../types/grade";
 import { isGradeInputArrayValid, isGradeInputValid } from "../types/validators";
 
-const finalGradeWithNameMsg =
-  "Grade can either be final or it needs to have a name";
+const invalidGrade = "Non-final grades need to have a name";
 const gradeExistsMsg = "Set student already has this grade";
 const activityDoesntExistMsg = "Cannot set grade for non-existent activity";
 const studentFinalGradeExistsMsg =
@@ -16,9 +15,7 @@ const gradeOverLimitMsg = "Grade is over set limit";
 const concatGradeDetails = (grade: GradeInput | Grade, msg: string): string =>
   msg +
   `. Grade: Student: ${grade.studentId}, Course: ${grade.courseId}, ${
-    "final" in grade && grade.final !== null
-      ? "Final grade."
-      : `Name: ${grade.name}`
+    grade.final ? "Final grade." : `Name: ${grade.name}`
   }`;
 
 const assertGradeDoesntExist = async (grade: Grade) => {
@@ -26,12 +23,12 @@ const assertGradeDoesntExist = async (grade: Grade) => {
   const existingGrade = await store.grades.findOne({
     studentId: grade.studentId,
     courseId: grade.courseId,
-    ...("final" in grade ? { final: grade.final } : { name: grade.name }),
+    final: grade.final,
+    ...(!grade.final && { name: grade.name }),
   });
 
   if (!existingGrade) return;
-  if ("name" in grade && grade.name !== null)
-    throw new Error(concatGradeDetails(grade, gradeExistsMsg));
+  if (grade.name) throw new Error(concatGradeDetails(grade, gradeExistsMsg));
   throw new Error(concatGradeDetails(grade, studentFinalGradeExistsMsg));
 };
 
@@ -65,19 +62,17 @@ export default {
     { grade }: { grade: GradeInput }
   ): Promise<Grade> => {
     const store = Store.getStore();
-    if (!isGradeInputValid(grade)) throw new Error(finalGradeWithNameMsg);
-    assertGradeDoesntExist(grade);
+    if (!isGradeInputValid(grade)) throw new Error(invalidGrade);
+    await assertGradeDoesntExist(grade);
 
-    if ("name" in grade && grade.name !== null) {
-      const activity = await store.gradeActivites.findOne({
-        courseId: grade.courseId,
-        name: grade.name,
-      });
-      if (!activity)
-        throw new Error(concatGradeDetails(grade, activityDoesntExistMsg));
-      if (activity.limit < grade.points)
-        throw new Error(concatGradeDetails(grade, gradeOverLimitMsg));
-    }
+    if (grade.final && grade.name) delete grade.name;
+
+    const activity = await store.activites.findOne({
+      courseId: grade.courseId,
+      name: grade.name,
+    });
+    if (!activity)
+      throw new Error(concatGradeDetails(grade, activityDoesntExistMsg));
 
     store.grades.insertOne(grade);
     return grade;
@@ -89,32 +84,57 @@ export default {
   ): Promise<Grade[]> => {
     const store = Store.getStore();
     if (!isGradeInputArrayValid(grades)) {
-      throw new Error(finalGradeWithNameMsg);
+      throw new Error(invalidGrade);
     }
 
+    const assertionPromises: Promise<void>[] = [];
     for (const grade of grades) {
-      assertGradeDoesntExist(grade);
+      assertionPromises.push(assertGradeDoesntExist(grade));
+      if (grade.final && grade.name) delete grade.name;
     }
+    await Promise.all(assertionPromises);
 
     for (const grade of grades) {
-      if (!("name" in grade) || grade.name !== null) {
-        continue;
-      }
-
-      const activity = await store.gradeActivites.findOne({
+      const activity = await store.activites.findOne({
         courseId: grade.courseId,
-        name: grade.name,
+        studentId: grade.studentId,
+        final: grade.final,
+        ...(!grade.final && { name: grade.name }),
       });
 
       if (!activity)
         throw new Error(concatGradeDetails(grade, activityDoesntExistMsg));
-      if (activity.limit < grade.points)
-        throw new Error(concatGradeDetails(grade, gradeOverLimitMsg));
     }
 
     store.grades.insertMany(grades);
     return grades;
   },
 
-  // updateGrade(grade: GradeInput!): Grade!
+  updateGrade: async (
+    _: unknown,
+    { grade }: { grade: GradeInput }
+  ): Promise<Grade | null> => {
+    const store = Store.getStore();
+
+    if (!isGradeInputValid(grade)) throw new Error(invalidGrade);
+
+    const result = await store.grades.findOneAndUpdate(
+      {
+        studentId: grade.studentId,
+        courseId: grade.courseId,
+        final: grade.final ?? false,
+        ...(grade.final && { name: grade.name }),
+      },
+      {
+        $set: {
+          points: grade.points,
+        },
+      },
+      {
+        returnDocument: "after",
+      }
+    );
+
+    return result;
+  },
 };
