@@ -21,7 +21,7 @@ I am not planning on expanding this project with any frontend implementations. I
 
 ## How To
 
-Using PNPM is recommended with this project. Make sure you edit the `.env` file, **especially the session secret,** and you have a MongoDB instance you can connect to.
+Using PNPM is recommended with this project. Make sure you edit the `.env` file, **especially the session secret,** and that you have a MongoDB instance you can connect to.
 
 ```bash
 pnpm i
@@ -80,10 +80,11 @@ Authorization is not yet implemented. Currently the only use of the context obta
 
 ## Wishlist
 
+- Testing
+- Linting
+- Generate TS to other folder
 - Add authorization logic:
   - Allow customization of permissions for all queries
   - Add built-in admin credentials to .env to avoid the need to create the first admin in the database directly
-- Expand the data model:
-  - Add sub-organizations (institutes and the like)
-  - Add directSupervisor field
-  - Add groups and majors/year presets
+- Adding and removing students to and from existing courses
+- Timestamps (createdAt, updatedAt)

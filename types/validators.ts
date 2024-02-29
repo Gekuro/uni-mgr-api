@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Credentials } from "./account";
+import { Grade, GradeInput } from "./grade";
+import { Activity, ActivityInput } from "./activity";
 
 export interface CorrectEnv {
   API_PORT: string;
@@ -54,3 +56,20 @@ export function isCredentialsObjValid(
   if (typeof body !== "object" || body === null) throw invCredentialsObj;
   if (!("UUID" in body) || !("password" in body)) throw invCredentialsObj;
 }
+
+export const isGradeInputValid = (grade: GradeInput): grade is Grade =>
+  grade.final === true || ("name" in grade && Boolean(grade.name));
+
+export const isGradeInputArrayValid = (
+  grades: GradeInput[]
+): grades is Grade[] => !grades.find((g) => !isGradeInputValid(g));
+
+export const isActivityInputValid = (
+  activity: ActivityInput
+): activity is Activity =>
+  activity.final === true || ("name" in activity && Boolean(activity.name));
+
+export const isActivityInputArrayValid = (
+  activities: ActivityInput[]
+): activities is Activity[] =>
+  !activities.find((a) => !isActivityInputValid(a));

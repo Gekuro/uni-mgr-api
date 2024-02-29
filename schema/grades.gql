@@ -1,0 +1,23 @@
+type Query {
+    grades(courseId: ID, studentId: ID, final: Boolean, name: String): [Grade]!
+}
+
+type Mutation {
+    addGrade(grade: GradeInput!): Grade!
+    addGrades(grades: [GradeInput!]!): [Grade!]!
+    updateGrade(grade: GradeInput!): Grade
+}
+
+type Grade {
+    student: Person
+    activity: Activity
+    points: Int!
+}
+
+input GradeInput {
+    studentId: ID!
+    courseId: ID!
+    points: Int!
+    final: Boolean
+    name: String
+}

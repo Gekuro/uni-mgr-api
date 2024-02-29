@@ -1,0 +1,24 @@
+type Query {
+    courseActivities(courseId: ID!): [Activity]!
+}
+
+type Mutation {
+    addActivity(activity: ActivityInput!): Activity!
+    addActivities(activity: [ActivityInput!]!): [Activity!]!
+    updateActivity(activity: ActivityInput!): Activity
+}
+
+type Activity {
+    course: Course
+    grades: [Grade]!
+    limit: Int!
+    final: Boolean!
+    name: String
+}
+
+input ActivityInput {
+    courseId: ID!
+    limit: Int!
+    final: Boolean
+    name: String
+}

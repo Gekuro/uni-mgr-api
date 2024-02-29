@@ -17,6 +17,7 @@ type Person {
   type: PersonType!
   attending: [Course]!
   lecturing: [Course]!
+  account: Account
 }
 
 input PersonInput {

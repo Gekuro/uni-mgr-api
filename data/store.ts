@@ -5,6 +5,8 @@ import { CorrectEnv } from "../types/validators";
 import { Course } from "../types/course";
 import { Person } from "../types/person";
 import { Account } from "../types/account";
+import { Grade } from "../types/grade";
+import { Activity } from "../types/activity";
 
 const env = process.env as unknown as CorrectEnv; // vaildated in main.ts
 let mongoDb: Db | undefined;
@@ -20,15 +22,14 @@ export async function connectDb() {
 }
 
 export class Store {
-  // singleton instance
   private static instance: Store | undefined;
 
-  // collections
   public persons: Collection<Person>;
   public courses: Collection<Course>;
   public accounts: Collection<Account>;
+  public grades: Collection<Grade>;
+  public activities: Collection<Activity>;
 
-  // other attributes
   private db: Db;
 
   private constructor(db: Db | undefined) {
@@ -40,6 +41,8 @@ export class Store {
     this.persons = this.db.collection<Person>("persons");
     this.courses = this.db.collection<Course>("courses");
     this.accounts = this.db.collection<Account>("accounts");
+    this.grades = this.db.collection<Grade>("grades");
+    this.activities = this.db.collection<Activity>("activites");
   }
 
   public static getStore() {
