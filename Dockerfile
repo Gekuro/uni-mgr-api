@@ -4,7 +4,7 @@ WORKDIR /home/node/uni-mgr-api
 COPY package.json .
 COPY pnpm-lock.yaml .
 
-RUN corepack install
+RUN corepack install & corepack enable
 RUN pnpm i
 COPY . .
 
