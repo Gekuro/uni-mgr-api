@@ -6,7 +6,7 @@ import persons from "./persons";
 import courses from "./courses";
 import accounts from "./accounts";
 import grades from "./grades";
-import activites from "./activites";
+import activities from "./activities";
 
 const resolvers: IResolvers = {
   Query: {
@@ -23,7 +23,7 @@ const resolvers: IResolvers = {
 
     grades: grades.getGrades,
 
-    courseActivities: activites.getCourseActivities,
+    courseActivities: activities.getCourseActivities,
   },
   Mutation: {
     addPerson: persons.addPerson,
@@ -40,9 +40,9 @@ const resolvers: IResolvers = {
     addGrades: grades.addGrades,
     updateGrade: grades.updateGrade,
 
-    addActivity: activites.addActivity,
-    addActivities: activites.addActivities,
-    updateActivity: activites.updateActivity,
+    addActivity: activities.addActivity,
+    addActivities: activities.addActivities,
+    updateActivity: activities.updateActivity,
   },
   Person: {
     attending: persons.attendingField,
@@ -61,8 +61,8 @@ const resolvers: IResolvers = {
     activity: grades.activityField,
   },
   Activity: {
-    course: activites.courseField,
-    grades: activites.gradesField,
+    course: activities.courseField,
+    grades: activities.gradesField,
   },
 };
 

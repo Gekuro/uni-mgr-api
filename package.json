@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx tsc && node main.js",
+    "start": "npx tsc && cp -r ./schema ./dist/schema && node dist/main.js",
     "build": "npx tsc"
   },
   "keywords": [],
