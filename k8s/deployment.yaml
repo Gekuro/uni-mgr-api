@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uni-mgr-api
+  labels:
+    app: uni-mgr-api
+spec:
+  selector:
+    matchLabels:
+      app: uni-mgr-api
+  replicas: 3
+ template:
+    metadata:
+      labels:
+        app: uni-mgr-api
+    spec:
+      containers:
+      - name: uni-mgr-api
+        image: gekuro/uni-mgr-api:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: MONGO_CONN_STR
+          valueFrom:
+            secret:
+              name: connection-string
+              key: MONGO_CONN_STR
+        - name: SESSION_SECRET
+          valueFrom:
+            secret:
+              name: session-secret
+              key: SESSION_SECRET
+        ports:
+        - containerPort: 8001
+          name: uni-mgr-api
+---
+
